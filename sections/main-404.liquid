@@ -1,0 +1,305 @@
+{% schema %}
+{
+  "name": "404 Seite",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "error_image",
+      "label": "Fehlerbild auswählen"
+    },
+    {
+      "type": "text",
+      "id": "title_text",
+      "label": "Haupttitel",
+      "default": "Oops! Diese Seite konnte nicht gefunden werden."
+    },
+    {
+      "type": "text",
+      "id": "morning_text",
+      "label": "Morgennachricht",
+      "default": "Guten Morgen! Vielleicht hilft unsere Suche, das Gesuchte zu finden."
+    },
+    {
+      "type": "text",
+      "id": "afternoon_text",
+      "label": "Nachmittagsnachricht",
+      "default": "Guten Tag! Lassen Sie uns Ihnen helfen, das Richtige zu finden."
+    },
+    {
+      "type": "text",
+      "id": "evening_text",
+      "label": "Abendnachricht",
+      "default": "Guten Abend! Wir helfen Ihnen gerne, das Gewünschte zu entdecken."
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  .template-404 {
+    text-align: center;
+    padding: 50px 20px;
+    background-color: #f2f2f2;
+  }
+  .error-image {
+    max-width: 200px;
+    margin-bottom: 20px;
+  }
+  .error-title {
+    font-size: 32px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  .error-message {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 30px;
+  }
+  .search-container {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto 40px;
+  }
+  .search-form {
+    display: flex;
+    width: 100%;
+  }
+
+  .search-input-wrapper {
+    flex-grow: 1;
+    position: relative;
+  }
+
+  #search-input {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px 0 0 4px;
+  }
+
+  #suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    z-index: 1000;
+    max-height: 300px;
+    overflow-y: auto;
+    width: 100%;
+  }
+  .suggestion-item {
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s;
+    cursor: pointer;
+  }
+  .suggestion-item:last-child {
+    border-bottom: none;
+  }
+  .suggestion-item:hover {
+    background-color: #f8f8f8;
+  }
+  .suggestion-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    margin-right: 15px;
+    border-radius: 4px;
+  }
+  .suggestion-details {
+    flex-grow: 1;
+    text-align: left;
+  }
+  .suggestion-title {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+    font-size: 14px;
+  }
+  .suggestion-price {
+    color: #666;
+    font-size: 13px;
+  }
+  .suggestion-sale-price {
+    color: #e74c3c;
+    font-weight: bold;
+  }
+  .suggestion-original-price {
+    text-decoration: line-through;
+    color: #999;
+    margin-left: 5px;
+    font-size: 12px;
+  }
+  .suggestion-sale-badge {
+    background-color: #e74c3c;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    margin-left: 5px;
+    font-weight: bold;
+  }
+  .search-button {
+    padding: 12px 20px;
+    font-size: 16px;
+    background-color: #0071e3;
+    color: #fff;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .helpful-links {
+    margin-top: 40px;
+  }
+  .helpful-links h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  .helpful-links ul {
+    list-style: none;
+    padding: 0;
+  }
+  .helpful-links li {
+    display: inline-block;
+    margin: 0 15px;
+  }
+  .helpful-links a {
+    color: #0071e3;
+    text-decoration: none;
+    font-size: 18px;
+  }
+    @media (max-width: 767px) {
+    .search-container {
+      width: 100%;
+    }
+
+    .search-form {
+      flex-direction: column;
+    }
+
+    #search-input {
+      border-radius: 4px;
+    }
+
+    .search-button {
+      margin-top: 10px;
+      border-radius: 4px;
+      width: 100%;
+    }
+
+    #suggestions {
+      width: 100%;
+      left: 0;
+      right: 0;
+    }
+  }
+</style>
+
+<div class="template-404 page-width page-margin center">
+  {% if section.settings.error_image != blank %}
+    <img src="{{ section.settings.error_image | img_url: 'medium' }}" alt="Seite nicht gefunden" class="error-image">
+  {% endif %}
+
+  <h1 class="error-title">
+    {{ section.settings.title_text }}
+  </h1>
+
+  {% assign current_hour = 'now' | date: "%H" | plus: 0 %}
+  <p class="error-message">
+    {% if current_hour < 12 %}
+      {{ section.settings.morning_text }}
+    {% elsif current_hour < 18 %}
+      {{ section.settings.afternoon_text }}
+    {% else %}
+      {{ section.settings.evening_text }}
+    {% endif %}
+  </p>
+
+  <div class="search-container">
+    <form action="/search" method="get" role="search" autocomplete="off" class="search-form">
+      <div class="search-input-wrapper">
+        <input type="search" name="q" placeholder="Suchen Sie nach Produkten, Kategorien..." aria-label="Search" id="search-input">
+        <div id="suggestions"></div>
+      </div>
+      <button type="submit" class="search-button">Suche</button>
+    </form>
+  </div>
+
+  <div class="helpful-links">
+    <h2>Hilfreiche Links</h2>
+    <ul>
+      <li><a href="/">Startseite</a></li>
+      <li><a href="/collections/chogan">Chogan Produkte</a></li>
+      <li><a href="/collections/bestseller">Bestseller</a></li>
+      <li><a href="/pages/kontakt">Kontaktieren Sie uns</a></li>
+    </ul>
+  </div>
+</div>
+
+<script>
+  document.getElementById('search-input').addEventListener('input', function() {
+    var query = this.value;
+    var suggestionsBox = document.getElementById('suggestions');
+
+    if (query.length > 2) {
+      fetch('/search/suggest.json?q=' + query + '&resources[type]=product')
+        .then(response => response.json())
+        .then(data => {
+          var suggestions = data.resources.results.products;
+          suggestionsBox.innerHTML = '';
+          suggestions.forEach(function(product) {
+            var suggestionItem = document.createElement('div');
+            suggestionItem.className = 'suggestion-item';
+            
+            var priceHtml = '';
+            if (product.compare_at_price && product.compare_at_price > product.price) {
+              priceHtml = `
+                <span class="suggestion-sale-price">${formatPrice(product.price)}</span>
+                <span class="suggestion-original-price">${formatPrice(product.compare_at_price)}</span>
+                <span class="suggestion-sale-badge">Angebot</span>
+              `;
+            } else {
+              priceHtml = `<span class="suggestion-price">${formatPrice(product.price)}</span>`;
+            }
+            
+            suggestionItem.innerHTML = `
+              <img src="${product.image || '/path/to/placeholder-image.jpg'}" alt="${product.title}" class="suggestion-image">
+              <div class="suggestion-details">
+                <div class="suggestion-title">${product.title}</div>
+                <div>${priceHtml}</div>
+              </div>
+            `;
+            suggestionItem.addEventListener('click', function() {
+              window.location.href = product.url;
+            });
+            suggestionsBox.appendChild(suggestionItem);
+          });
+        });
+    } else {
+      suggestionsBox.innerHTML = '';
+    }
+  });
+
+  function formatPrice(price) {
+    return (price / 1).toFixed(2).replace('.', ',') + ' €';
+  }
+
+  document.addEventListener('click', function(event) {
+    var suggestionsBox = document.getElementById('suggestions');
+    var searchInput = document.getElementById('search-input');
+    if (event.target !== searchInput && !searchInput.contains(event.target)) {
+      suggestionsBox.innerHTML = '';
+    }
+  });
+</script>
